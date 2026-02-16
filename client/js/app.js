@@ -1,4 +1,4 @@
-const API = "http://localhost:5000";
+const API = "https://nmk-system.onrender.com";
 
 function logout() {
   localStorage.removeItem("token");
