@@ -134,13 +134,13 @@ if (!token) {
 
 async function loadDashboard() {
 
-  const dashboardRes = await fetch("http://localhost:5000/dashboard", {
+  const dashboardRes = await fetch("https://nmk-system.onrender.com/dashboard", {
     headers: { "Authorization": "Bearer " + token }
   });
 
   const dashboardData = await dashboardRes.json();
 
-  const paymentsRes = await fetch("http://localhost:5000/payments", {
+  const paymentsRes = await fetch("https://nmk-system.onrender.com/payments", {
     headers: { "Authorization": "Bearer " + token }
   });
 
