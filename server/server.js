@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 require("dotenv").config();
 const sheets = require("./config/googleAuth");
@@ -14,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Nasha Mukti System API Running...");
+  res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
 // ✅ Admin Login
@@ -55,6 +56,7 @@ const authenticate = (req, res, next) => {
     res.status(400).json({ message: "Invalid token." });
   }
 };
+app.use(express.static(path.join(__dirname, "../client")));
 
 // ✅ Google Sheet Test Route
 app.get("/test-sheet", async (req, res) => {
