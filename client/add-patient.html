@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Patient</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+  <h2>Add Patient</h2>
+
+  <form id="addForm">
+    <div class="mb-3">
+      <label>Name</label>
+      <input type="text" id="name" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Guardian</label>
+      <input type="text" id="guardian" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Mobile</label>
+      <input type="text" id="mobile" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Admission Date</label>
+      <input type="date" id="admissionDate" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Addiction Type</label>
+      <input type="text" id="addictionType" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Total Fees</label>
+      <input type="number" id="totalFees" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Patient</button>
+    <a href="patients.html" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+
+if (!token) {
+  window.location.href = "index.html";
+}
+
+document.getElementById("addForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = {
+    name: document.getElementById("name").value,
+    guardian: document.getElementById("guardian").value,
+    mobile: document.getElementById("mobile").value,
+    admissionDate: document.getElementById("admissionDate").value,
+    addictionType: document.getElementById("addictionType").value,
+    totalFees: document.getElementById("totalFees").value
+  };
+
+  const response = await fetch("http://localhost:5000/add-patient", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (response.ok) {
+    alert("Patient added successfully");
+    window.location.href = "patients.html";
+  } else {
+    alert("Failed to add patient");
+  }
+});
+</script>
+
+</body>
+</html>

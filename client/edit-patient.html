@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Patient</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+  <h2>Edit Patient</h2>
+
+  <form id="editForm">
+    <div class="mb-3">
+      <label>Name</label>
+      <input type="text" id="name" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Guardian</label>
+      <input type="text" id="guardian" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Mobile</label>
+      <input type="text" id="mobile" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Total Fees</label>
+      <input type="number" id="totalFees" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a href="patients.html" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+const params = new URLSearchParams(window.location.search);
+const patientId = params.get("id");
+
+if (!token) {
+  window.location.href = "index.html";
+}
+
+// Load patient data
+async function loadPatient() {
+  const response = await fetch("http://localhost:5000/patients", {
+    headers: { "Authorization": "Bearer " + token }
+  });
+
+  const data = await response.json();
+  const patient = data.patients.find(p => p.id === patientId);
+
+  if (!patient) {
+    alert("Patient not found");
+    window.location.href = "patients.html";
+  }
+
+  document.getElementById("name").value = patient.name;
+  document.getElementById("guardian").value = patient.guardian;
+  document.getElementById("mobile").value = patient.mobile;
+  document.getElementById("totalFees").value = patient.totalFees;
+}
+
+document.getElementById("editForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const updatedData = {
+    name: document.getElementById("name").value,
+    guardian: document.getElementById("guardian").value,
+    mobile: document.getElementById("mobile").value,
+    totalFees: document.getElementById("totalFees").value
+  };
+
+  const response = await fetch(`http://localhost:5000/patients/${patientId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify(updatedData)
+  });
+
+  if (response.ok) {
+    alert("Patient updated successfully");
+    window.location.href = "patients.html";
+  } else {
+    alert("Update failed");
+  }
+});
+
+loadPatient();
+</script>
+
+</body>
+</html>
