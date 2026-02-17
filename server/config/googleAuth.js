@@ -2,7 +2,7 @@ const { google } = require("googleapis");
 const path = require("path");
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: path.join(__dirname, "google-credentials.json"),
+  credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS),
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
