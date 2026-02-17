@@ -115,7 +115,7 @@ app.post("/add-patient", async (req, res) => {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:I",
+      range: "Sheet1!A:J",
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [
@@ -287,7 +287,7 @@ app.put("/patients/:id", authenticate, async (req, res) => {
     // 1️⃣ Get Full Patient Sheet Data (including Paid & Balance)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:I",
+      range: "Sheet1!A:J",
     });
 
     const rows = response.data.values;
