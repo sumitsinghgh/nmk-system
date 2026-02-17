@@ -10,6 +10,8 @@ const ADMIN_PASSWORD = "123456";
 
 
 const app = express();
+console.log("Server file loaded successfully");
+
 
 app.use(cors());
 app.use(express.json());
@@ -657,7 +659,7 @@ app.get("/payments/:patientId", authenticate, async (req, res) => {
 
 // ✅ Dashboard Summary (Active Patients Only)
 app.get("/dashboard", authenticate, async (req, res) => {
-
+  console.log("Dashboard route hit");
   try {
     const patientResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
