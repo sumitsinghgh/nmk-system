@@ -191,7 +191,7 @@ app.get("/patients", async (req, res) => {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A2:G", // Header ko skip kiya (Row 1)
+      range: "Sheet1!A2:I", // Header ko skip kiya (Row 1)
     });
 
     const rows = response.data.values || [];
@@ -204,7 +204,10 @@ app.get("/patients", async (req, res) => {
       admissionDate: row[4],
       addictionType: row[5],
       totalFees: row[6],
+      paidAmount: row[7] || 0,
+      balance: row[8] || row[6],
     }));
+
 
     res.json({
       count: patients.length,
