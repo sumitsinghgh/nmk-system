@@ -267,7 +267,7 @@ app.get("/patients/:id", async (req, res) => {
   }
 });
 
-// ✅ Update Patient By ID
+// ✅ Update Patient By ID (Auto Recalculate Balance)
 app.put("/patients/:id", authenticate, async (req, res) => {
 
   try {
@@ -282,9 +282,10 @@ app.put("/patients/:id", authenticate, async (req, res) => {
       totalFees,
     } = req.body;
 
+    // 1️⃣ Get Full Patient Sheet Data (including Paid & Balance)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:G",
+      range: "Sheet1!A:I",
     });
 
     const rows = response.data.values;
@@ -302,11 +303,25 @@ app.put("/patients/:id", authenticate, async (req, res) => {
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    const actualRowNumber = rowIndex + 2; // +2 because header row + zero index
+    const actualRowNumber = rowIndex + 2; // header row adjust
 
+    // 2️⃣ Get existing paid amount
+    const paidAmount = Number(dataRows[rowIndex][7] || 0);
+    const newTotalFees = Number(totalFees);
+
+    // 3️⃣ Prevent invalid fee update
+    if (newTotalFees < paidAmount) {
+      return res.status(400).json({
+        message: "Total fees cannot be less than already paid amount",
+      });
+    }
+
+    const newBalance = newTotalFees - paidAmount;
+
+    // 4️⃣ Update full row including recalculated balance
     await sheets.spreadsheets.values.update({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: `Sheet1!A${actualRowNumber}:G${actualRowNumber}`,
+      range: `Sheet1!A${actualRowNumber}:I${actualRowNumber}`,
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [
@@ -317,13 +332,18 @@ app.put("/patients/:id", authenticate, async (req, res) => {
             mobile,
             admissionDate,
             addictionType,
-            totalFees,
+            newTotalFees,
+            paidAmount,
+            newBalance,
           ],
         ],
       },
     });
 
-    res.json({ message: "Patient updated successfully!" });
+    res.json({
+      message: "Patient updated successfully!",
+      updatedBalance: newBalance,
+    });
 
   } catch (error) {
     res.status(500).json({
