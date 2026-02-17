@@ -655,30 +655,36 @@ app.get("/payments/:patientId", authenticate, async (req, res) => {
 });
 
 
-// ✅ Dashboard Summary
+// ✅ Dashboard Summary (Active Patients Only)
 app.get("/dashboard", authenticate, async (req, res) => {
 
   try {
-    // Patients Data
     const patientResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:I",
+      range: "Sheet1!A2:J", // Include Status column
     });
 
     const patientRows = patientResponse.data.values || [];
-    const totalPatients = patientRows.length - 1;
 
+    let totalPatients = 0;
     let totalCollection = 0;
     let totalPending = 0;
 
-    for (let i = 1; i < patientRows.length; i++) {
-      const totalFees = Number(patientRows[i][6] || 0);
-      const paid = Number(patientRows[i][7] || 0);
-      const balance = totalFees - paid;
+    patientRows.forEach((row) => {
 
-      totalCollection += paid;
-      totalPending += balance;
-    }
+      const status = row[9]; // J column = Status
+
+      if (status === "Active") {
+
+        totalPatients++;
+
+        const totalFees = Number(row[6] || 0);
+        const paid = Number(row[7] || 0);
+
+        totalCollection += paid;
+        totalPending += (totalFees - paid);
+      }
+    });
 
     res.json({
       totalPatients,
@@ -692,11 +698,4 @@ app.get("/dashboard", authenticate, async (req, res) => {
       details: error.message,
     });
   }
-});
-
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
 });
