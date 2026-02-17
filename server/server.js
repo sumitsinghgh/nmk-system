@@ -480,7 +480,7 @@ app.post("/add-payment", authenticate, async (req, res) => {
     // 1️⃣ Get Patient Data FIRST
     const patientRes = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A2:I",
+      range: "Sheet1!A2:J",
     });
 
     const rows = patientRes.data.values;
@@ -496,6 +496,14 @@ app.post("/add-payment", authenticate, async (req, res) => {
     }
 
     const actualRowNumber = rowIndex + 2;
+
+    const status = rows[rowIndex][9];  // Status column (J)
+
+    if (status !== "Active") {
+      return res.status(400).json({
+      message: "Cannot add payment. Patient is deleted.",
+      });
+    }
 
     const totalFees = Number(rows[rowIndex][6] || 0);
     const existingPaid = Number(rows[rowIndex][7] || 0);
