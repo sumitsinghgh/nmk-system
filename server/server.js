@@ -481,15 +481,18 @@ app.post("/add-payment", authenticate, async (req, res) => {
       });
     }
 
-    // 3️⃣ Update PaidAmount in Patient Sheet
+    const newBalance = totalFees - newPaidAmount;
+
+    // Update BOTH PaidAmount AND Balance
     await sheets.spreadsheets.values.update({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: `Sheet1!H${actualRowNumber}`,
+      range: `Sheet1!H${actualRowNumber}:I${actualRowNumber}`,
       valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: [[newPaidAmount]],
+        values: [[newPaidAmount, newBalance]],
       },
     });
+
 
     // 4️⃣ Generate PaymentID
     const paymentRes = await sheets.spreadsheets.values.get({
