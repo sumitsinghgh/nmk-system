@@ -194,12 +194,14 @@ app.get("/patients", async (req, res) => {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A2:I", // Header ko skip kiya (Row 1)
+      range: "Sheet1!A2:J", // Header ko skip kiya (Row 1)
     });
 
     const rows = response.data.values || [];
 
-    const patients = rows.map((row) => ({
+    const patients = rows
+    .filter(row => row[9] === "Active")   // 👈 Sirf Active
+    .map((row) => ({
       id: row[0],
       name: row[1],
       guardian: row[2],
@@ -209,8 +211,8 @@ app.get("/patients", async (req, res) => {
       totalFees: row[6],
       paidAmount: row[7] || 0,
       balance: row[8] || row[6],
+      status: row[9],
     }));
-
 
     res.json({
       count: patients.length,
