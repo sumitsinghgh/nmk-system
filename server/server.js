@@ -668,15 +668,25 @@ app.get("/dashboard", authenticate, async (req, res) => {
 
     const patientRows = patientResponse.data.values || [];
 
+    // ✅ Safety check yaha add karo
+    if (!Array.isArray(patientRows)) {
+      return res.json({
+        totalPatients: 0,
+        totalCollection: 0,
+        totalPending: 0,
+      });
+    }
+
     let totalPatients = 0;
     let totalCollection = 0;
     let totalPending = 0;
 
     patientRows.forEach((row) => {
 
-      const status = row[9]; // J column = Status
+    const status = row[9] || "";  // safe access
 
-      if (status === "Active") {
+      if (status.trim() === "Active") {
+
 
         totalPatients++;
 
