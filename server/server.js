@@ -110,6 +110,8 @@ app.post("/add-patient", async (req, res) => {
     const newId = "P" + String(nextIdNumber).padStart(3, "0");
 
     const balance = Number(totalFees) - Number(paidAmount);
+    const status = "Active";
+
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
@@ -127,6 +129,7 @@ app.post("/add-patient", async (req, res) => {
             totalFees,
             paidAmount,
             balance,
+            status,
           ],
         ],
       },
@@ -343,7 +346,7 @@ app.post("/patients/:id/pay", async (req, res) => {
     // Get all sheet data
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:I",
+      range: "Sheet1!A:J",
     });
 
     const rows = response.data.values;
