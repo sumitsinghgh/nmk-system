@@ -207,7 +207,7 @@ async function loadDashboard() {
         <td>${p.PaymentID}</td>
         <td>${p.PatientID}</td>
         <td>₹${p.Amount}</td>
-        <td>${p.PaymentDate}</td>
+        <td>${formatDate(p.PaymentDate)}</td>
       </tr>
     `;
   });
@@ -216,6 +216,14 @@ async function loadDashboard() {
 
   document.getElementById("recentPayments").innerHTML = table;
 }
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 
 function logout() {
   localStorage.removeItem("token");

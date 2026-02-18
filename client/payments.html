@@ -236,7 +236,7 @@ async function loadPayments() {
         <td>${p.PaymentID}</td>
         <td>${p.PatientID}</td>
         <td>₹${p.Amount}</td>
-        <td>${p.PaymentDate}</td>
+        <td>${formatDate(p.PaymentDate)}</td>
         <td>${p.PaymentMode}</td>
         <td>${p.ReceivedBy}</td>
       </tr>
@@ -263,6 +263,13 @@ window.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 </script>
 
