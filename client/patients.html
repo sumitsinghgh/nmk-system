@@ -71,7 +71,7 @@
     type="text" 
     id="searchInput" 
     class="form-control" 
-    placeholder="Search by ID, Name or Mobile..."
+    placeholder="Search by ID or Name..."
     onkeyup="searchPatients()"
   >
 </div>
@@ -87,20 +87,25 @@
 <script>
 const API = "https://nmk-system.onrender.com";
 function searchPatients() {
-  const input = document.getElementById("searchInput").value.toLowerCase();
+  const input = document.getElementById("searchInput").value.trim().toLowerCase();
   const rows = document.querySelectorAll("#patientsTable tbody tr");
 
-  rows.forEach(row => {
-    const id = row.cells[0].innerText.toLowerCase();     // ID column
-    const name = row.cells[1].innerText.toLowerCase();   // Name column
+  if (input === "") {
+    rows.forEach(row => row.style.display = "");
+    return;
+  }
 
-    if (id.includes(input) || name.includes(input)) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
+  rows.forEach(row => {
+    const id = row.cells[0].innerText.trim().toLowerCase();
+    const name = row.cells[1].innerText.trim().toLowerCase();
+
+    // Strict exact match only
+    const match = (id === input || name === input);
+
+    row.style.display = match ? "" : "none";
   });
 }
+
 
 
 
