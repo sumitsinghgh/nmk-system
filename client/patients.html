@@ -91,10 +91,17 @@ function searchPatients() {
   const rows = document.querySelectorAll("#patientsTable tbody tr");
 
   rows.forEach(row => {
-    const text = row.innerText.toLowerCase();
-    row.style.display = text.includes(input) ? "" : "none";
+    const id = row.cells[0].innerText.toLowerCase();     // ID column
+    const name = row.cells[1].innerText.toLowerCase();   // Name column
+
+    if (id.includes(input) || name.includes(input)) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
   });
 }
+
 
 
 async function loadPatients() {
