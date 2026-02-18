@@ -22,8 +22,20 @@
 
     <div class="mb-3">
       <label>Mobile</label>
-      <input type="text" id="mobile" class="form-control" required>
+      <div class="input-group">
+      <span class="input-group-text">+91</span>
+      <input 
+      type="text" 
+      id="mobile" 
+      class="form-control" 
+      maxlength="10"
+      placeholder="Enter 10 digit mobile number"
+      required
+    >
     </div>
+      <small id="mobileError" class="text-danger"></small>
+    </div>
+
 
     <div class="mb-3">
       <label>Admission Date</label>
@@ -55,6 +67,8 @@ if (!token) {
 document.getElementById("addForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  if (!validateMobile()) return;
+
   const data = {
     name: document.getElementById("name").value,
     guardian: document.getElementById("guardian").value,
@@ -80,6 +94,30 @@ document.getElementById("addForm").addEventListener("submit", async (e) => {
     alert("Failed to add patient");
   }
 });
+
+// Allow only digits while typing
+document.getElementById("mobile").addEventListener("input", function () {
+  this.value = this.value.replace(/[^0-9]/g, "");
+});
+
+function validateMobile() {
+  const mobile = document.getElementById("mobile").value.trim();
+  const error = document.getElementById("mobileError");
+
+  if (mobile.length !== 10) {
+    error.innerText = "Mobile number must be exactly 10 digits";
+    return false;
+  }
+
+  if (/^0+$/.test(mobile)) {
+    error.innerText = "Invalid mobile number";
+    return false;
+  }
+
+  error.innerText = "";
+  return true;
+}
+
 </script>
 
 </body>
