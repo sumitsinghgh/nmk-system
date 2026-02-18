@@ -665,8 +665,9 @@ app.get("/dashboard", authenticate, async (req, res) => {
       range: "Sheet1!A2:J",
     });
 
-    const rows = response.data.values || [];
+    const rows = response.data.values;
 
+    // Safety check
     if (!Array.isArray(rows)) {
       return res.json({
         totalPatients: 0,
@@ -680,9 +681,10 @@ app.get("/dashboard", authenticate, async (req, res) => {
     let totalPending = 0;
 
     rows.forEach((row) => {
+
       if (!row) return;
 
-      const status = row[9] || "Active"; // default Active if blank
+      const status = row[9] || "";
 
       if (status === "Active") {
         totalPatients++;
@@ -702,12 +704,10 @@ app.get("/dashboard", authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Dashboard Error:", error.message);
-
+    console.error("Dashboard error:", error);
     res.status(500).json({
       error: "Failed to load dashboard",
       details: error.message,
     });
   }
 });
-
