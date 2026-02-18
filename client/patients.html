@@ -99,12 +99,13 @@ function searchPatients() {
     const id = row.cells[0].innerText.trim().toLowerCase();
     const name = row.cells[1].innerText.trim().toLowerCase();
 
-    // Strict exact match only
-    const match = (id === input || name === input);
+    // Match only if ID OR Name starts with input
+    const match = id.startsWith(input) || name.startsWith(input);
 
     row.style.display = match ? "" : "none";
   });
 }
+
 
 
 
