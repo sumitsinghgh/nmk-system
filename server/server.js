@@ -659,17 +659,15 @@ app.get("/payments/:patientId", authenticate, async (req, res) => {
 
 // ✅ Dashboard Summary (Active Patients Only)
 app.get("/dashboard", authenticate, async (req, res) => {
-  console.log("Dashboard route hit");
   try {
-    const patientResponse = await sheets.spreadsheets.values.get({
+    const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A2:J", // Include Status column
+      range: "Sheet1!A2:J",
     });
 
-    const patientRows = patientResponse.data.values || [];
+    const rows = response.data.values || [];
 
-    // ✅ Safety check yaha add karo
-    if (!Array.isArray(patientRows)) {
+    if (!Array.isArray(rows)) {
       return res.json({
         totalPatients: 0,
         totalCollection: 0,
@@ -681,13 +679,12 @@ app.get("/dashboard", authenticate, async (req, res) => {
     let totalCollection = 0;
     let totalPending = 0;
 
-    patientRows.forEach((row) => {
+    rows.forEach((row) => {
+      if (!row) return;
 
-    const status = row[9] || "";  // safe access
+      const status = row[9] || "Active"; // default Active if blank
 
-      if (status.trim() === "Active") {
-
-
+      if (status === "Active") {
         totalPatients++;
 
         const totalFees = Number(row[6] || 0);
@@ -705,9 +702,12 @@ app.get("/dashboard", authenticate, async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Dashboard Error:", error.message);
+
     res.status(500).json({
       error: "Failed to load dashboard",
       details: error.message,
     });
   }
 });
+
