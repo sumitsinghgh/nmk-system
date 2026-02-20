@@ -1,138 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>Patients</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-  body { 
-    background:#f4f6f9; 
-    overflow-x: hidden;
-  }
+  <head>
+    <title>Patients</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: #f4f6f9;
+        overflow-x: hidden;
+      }
 
-  .sidebar {
-    width: 220px;
-    height: 100vh;
-    position: fixed;
-    background:#1f2d3d;
-    color:white;
-    padding-top:20px;
-  }
+      .sidebar {
+        width: 220px;
+        height: 100vh;
+        position: fixed;
+        background: #1f2d3d;
+        color: white;
+        padding-top: 20px;
+      }
 
-  .sidebar a {
-    display:block;
-    width:100%;
-    color:white;
-    padding:10px 20px;   /* Same as dashboard */
-    text-decoration:none;
-  }
+      .sidebar a {
+        display: block;
+        width: 100%;
+        color: white;
+        padding: 10px 20px; /* Same as dashboard */
+        text-decoration: none;
+      }
 
-  .sidebar a:hover {
-    background:#334155;
-  }
+      .sidebar a:hover {
+        background: #334155;
+      }
 
-  .sidebar a.active {
-    background: #0f172a;
-    font-weight: bold;
-  }
+      .sidebar a.active {
+        background: #0f172a;
+        font-weight: bold;
+      }
 
-  .content {
-    margin-left:220px;   /* Sidebar ke equal */
-    padding:30px;
-  }
-  .table tbody tr:hover {
-    background-color: #cbd5e1 !important;
-    transition: 0.2s;
-  }
-  .sidebar a {
-    transition: 0.2s;
-  }
-  .btn-primary {
-    border-radius: 8px;
-    font-weight: 500;
-  }
+      .content {
+        margin-left: 220px; /* Sidebar ke equal */
+        padding: 30px;
+      }
+      .table tbody tr:hover {
+        background-color: #cbd5e1 !important;
+        transition: 0.2s;
+      }
+      .sidebar a {
+        transition: 0.2s;
+      }
+      .btn-primary {
+        border-radius: 8px;
+        font-weight: 500;
+      }
+      .table-container {
+        max-height: 500px; /* jitni height chahiye */
+        overflow-y: auto; /* vertical scroll only */
+      }
+      .table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #212529; /* same as table-dark */
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h4 class="text-center mb-4">NMK Admin</h4>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="patients.html" class="active">Patients</a>
+      <a href="payments.html">Payments</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
 
-</style>
+    <div class="content">
+      <h2>Patients</h2>
+      <div class="mb-3">
+        <input
+          type="text"
+          id="searchInput"
+          class="form-control"
+          placeholder="Search by ID or Name..."
+          onkeyup="searchPatients()"
+        />
+      </div>
 
-</head>
-<body>
+      <button
+        class="btn btn-primary mb-3"
+        onclick="window.location.href = 'add-patient.html'"
+      >
+        Add Patient
+      </button>
 
-<div class="sidebar">
-  <h4 class="text-center mb-4">NMK Admin</h4>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="patients.html" class="active">Patients</a>
-  <a href="payments.html">Payments</a>
-  <a href="#" onclick="logout()">Logout</a>
-</div>
+      <div class="table-container">
+        <div id="patientsTable"></div>
+      </div>
+    </div>
 
-<div class="content">
-  <h2>Patients</h2>
-  <div class="mb-3">
-  <input 
-    type="text" 
-    id="searchInput" 
-    class="form-control" 
-    placeholder="Search by ID or Name..."
-    onkeyup="searchPatients()"
-  >
-</div>
+    <script>
+      const API = "https://nmk-system.onrender.com";
+      function searchPatients() {
+        const input = document
+          .getElementById("searchInput")
+          .value.trim()
+          .toLowerCase();
+        const rows = document.querySelectorAll("#patientsTable tbody tr");
 
+        if (input === "") {
+          rows.forEach((row) => (row.style.display = ""));
+          return;
+        }
 
-  <button class="btn btn-primary mb-3" onclick="window.location.href='add-patient.html'">
-    Add Patient
-  </button>
+        rows.forEach((row) => {
+          const id = row.cells[0].innerText.trim().toLowerCase();
+          const name = row.cells[1].innerText.trim().toLowerCase();
 
-  <div id="patientsTable"></div>
-</div>
+          // Match only if ID OR Name starts with input
+          const match = id.startsWith(input) || name.startsWith(input);
 
-<script>
-const API = "https://nmk-system.onrender.com";
-function searchPatients() {
-  const input = document.getElementById("searchInput").value.trim().toLowerCase();
-  const rows = document.querySelectorAll("#patientsTable tbody tr");
+          row.style.display = match ? "" : "none";
+        });
+      }
 
-  if (input === "") {
-    rows.forEach(row => row.style.display = "");
-    return;
-  }
+      async function loadPatients() {
+        const token = localStorage.getItem("token");
 
-  rows.forEach(row => {
-    const id = row.cells[0].innerText.trim().toLowerCase();
-    const name = row.cells[1].innerText.trim().toLowerCase();
+        if (!token) {
+          window.location.href = "index.html";
+          return;
+        }
 
-    // Match only if ID OR Name starts with input
-    const match = id.startsWith(input) || name.startsWith(input);
+        const res = await fetch(API + "/patients", {
+          headers: { Authorization: "Bearer " + token },
+        });
 
-    row.style.display = match ? "" : "none";
-  });
-}
+        const data = await res.json();
+        console.log(data);
 
+        if (!res.ok) {
+          alert("Session expired");
+          logout();
+          return;
+        }
 
-
-
-
-async function loadPatients() {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    window.location.href = "index.html";
-    return;
-  }
-
-  const res = await fetch(API + "/patients", {
-    headers: { "Authorization": "Bearer " + token }
-  });
-
-  const data = await res.json();
-  console.log(data);
-
-
-  if (!res.ok) {
-    alert("Session expired");
-    logout();
-    return;
-  }
-
-  let table = `
+        let table = `
      <table id="patientsTable" class="table table-bordered table-striped">
 
       <thead class="table-dark">
@@ -152,10 +165,10 @@ async function loadPatients() {
       <tbody>
   `;
 
-  data.patients.forEach(p => {
-  const balance = (p.totalFees || 0) - (p.paidAmount || 0);
+        data.patients.forEach((p) => {
+          const balance = (p.totalFees || 0) - (p.paidAmount || 0);
 
-  table += `
+          table += `
     <tr>
       <td>${p.id}</td>
       <td>${p.name}</td>
@@ -172,40 +185,36 @@ async function loadPatients() {
       </td>
     </tr>
   `;
-});
+        });
 
+        table += "</tbody></table>";
 
+        document.getElementById("patientsTable").innerHTML = table;
+      }
 
-  table += "</tbody></table>";
+      async function deletePatient(id) {
+        if (!confirm("Delete this patient?")) return;
 
-  document.getElementById("patientsTable").innerHTML = table;
-}
+        const token = localStorage.getItem("token");
 
-async function deletePatient(id) {
-  if (!confirm("Delete this patient?")) return;
+        await fetch(API + "/patients/" + id, {
+          method: "DELETE",
+          headers: { Authorization: "Bearer " + token },
+        });
 
-  const token = localStorage.getItem("token");
+        loadPatients();
+      }
 
-  await fetch(API + "/patients/" + id, {
-    method: "DELETE",
-    headers: { "Authorization": "Bearer " + token }
-  });
+      function editPatient(id) {
+        window.location.href = `edit-patient.html?id=${id}`;
+      }
 
-  loadPatients();
-}
+      function logout() {
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
+      }
 
-function editPatient(id) {
-  window.location.href = `edit-patient.html?id=${id}`;
-}
-
-
-function logout() {
-  localStorage.removeItem("token");
-  window.location.href = "index.html";
-}
-
-loadPatients();
-</script>
-
-</body>
+      loadPatients();
+    </script>
+  </body>
 </html>
