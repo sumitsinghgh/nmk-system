@@ -282,14 +282,14 @@ app.get("/patients", async (req, res) => {
   }
 });
 
-// ✅ Get Patient By ID
+// ✅ Get Patient By ID (Full Columns Support)
 app.get("/patients/:id", async (req, res) => {
   try {
     const patientId = req.params.id;
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:G",
+      range: "Sheet1!A:L", // ✅ Extended till DistanceKM
     });
 
     const rows = response.data.values;
@@ -298,13 +298,13 @@ app.get("/patients/:id", async (req, res) => {
       return res.status(404).json({ message: "No patients found" });
     }
 
-    const headers = rows[0];
-    const dataRows = rows.slice(1);
+    const headers = rows[0]; // First row (column names)
+    const dataRows = rows.slice(1); // Actual data
 
     const patient = dataRows
       .map((row) =>
         headers.reduce((obj, header, index) => {
-          obj[header] = row[index];
+          obj[header] = row[index] || ""; // ✅ Prevent undefined
           return obj;
         }, {}),
       )
