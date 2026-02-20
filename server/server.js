@@ -8,10 +8,8 @@ const jwt = require("jsonwebtoken");
 const ADMIN_EMAIL = "admin@nmk.com";
 const ADMIN_PASSWORD = "123456";
 
-
 const app = express();
 console.log("Server file loaded successfully");
-
 
 app.use(cors());
 app.use(express.json());
@@ -28,11 +26,9 @@ app.post("/login", (req, res) => {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
-  const token = jwt.sign(
-    { email: ADMIN_EMAIL },
-    process.env.JWT_SECRET,
-    { expiresIn: "8h" }
-  );
+  const token = jwt.sign({ email: ADMIN_EMAIL }, process.env.JWT_SECRET, {
+    expiresIn: "8h",
+  });
 
   res.json({
     message: "Login successful",
@@ -45,7 +41,9 @@ const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ message: "Access denied. No token provided." });
+    return res
+      .status(401)
+      .json({ message: "Access denied. No token provided." });
   }
 
   const token = authHeader.split(" ")[1];
@@ -92,7 +90,7 @@ app.post("/add-patient", async (req, res) => {
       totalFees,
       paidAmount = 0,
       pickupType = "Self",
-      distance = ""
+      distance = "",
     } = req.body;
 
     // 🔹 Validate Pickup / Distance
@@ -101,7 +99,7 @@ app.post("/add-patient", async (req, res) => {
     if (pickupType === "Pickup") {
       if (!distance || isNaN(distance) || Number(distance) <= 0) {
         return res.status(400).json({
-          message: "Valid distance (in KM) required for Pickup"
+          message: "Valid distance (in KM) required for Pickup",
         });
       }
       finalDistance = parseInt(distance); // integer only
@@ -151,7 +149,7 @@ app.post("/add-patient", async (req, res) => {
             balance,
             status,
             pickupType,
-            finalDistance
+            finalDistance,
           ],
         ],
       },
@@ -162,7 +160,6 @@ app.post("/add-patient", async (req, res) => {
       patientId: newId,
       balance: balance,
     });
-
   } catch (error) {
     res.status(500).json({
       error: "Failed to add patient",
@@ -170,7 +167,6 @@ app.post("/add-patient", async (req, res) => {
     });
   }
 });
-
 
 // 🔥 Temporary Browser Test (Auto ID)
 app.get("/add-test", async (req, res) => {
@@ -222,48 +218,46 @@ app.get("/patients", async (req, res) => {
     const rows = response.data.values || [];
 
     const patients = rows
-    .filter(row => row[9] === "Active")
-    .map((row) => {
+      .filter((row) => row[9] === "Active")
+      .map((row) => {
+        const admissionDate = row[4];
 
-      const admissionDate = row[4];
+        let months = 0;
+        let days = 0;
 
-      let months = 0;
-      let days = 0;
+        if (admissionDate) {
+          const admitDate = new Date(admissionDate);
+          const today = new Date();
 
-      if (admissionDate) {
-        const admitDate = new Date(admissionDate);
-        const today = new Date();
+          const diffTime = today - admitDate;
+          const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-        const diffTime = today - admitDate;
-        const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          months = Math.floor(totalDays / 30);
+          days = totalDays % 30;
+        }
 
-        months = Math.floor(totalDays / 30);
-        days = totalDays % 30;
-      }
-
-      return {
-        id: row[0],
-        name: row[1],
-        guardian: row[2],
-        mobile: row[3],
-        admissionDate: row[4],
-        addictionType: row[5],
-        totalFees: row[6],
-        paidAmount: row[7] || 0,
-        balance: row[8] || row[6],
-        status: row[9],
-        pickupType: row[10] || "",
-        distance: row[11] || "",
-        months,
-        days
-      };
-    });
+        return {
+          id: row[0],
+          name: row[1],
+          guardian: row[2],
+          mobile: row[3],
+          admissionDate: row[4],
+          addictionType: row[5],
+          totalFees: row[6],
+          paidAmount: row[7] || 0,
+          balance: row[8] || row[6],
+          status: row[9],
+          pickupType: row[10] || "",
+          distance: row[11] || "",
+          months,
+          days,
+        };
+      });
 
     res.json({
       count: patients.length,
       patients,
     });
-
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch patients",
@@ -296,7 +290,7 @@ app.get("/patients/:id", async (req, res) => {
         headers.reduce((obj, header, index) => {
           obj[header] = row[index];
           return obj;
-        }, {})
+        }, {}),
       )
       .find((p) => p.ID === patientId);
 
@@ -305,7 +299,6 @@ app.get("/patients/:id", async (req, res) => {
     }
 
     res.json(patient);
-
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch patient",
@@ -316,18 +309,11 @@ app.get("/patients/:id", async (req, res) => {
 
 // ✅ Update Patient By ID (Auto Recalculate Balance)
 app.put("/patients/:id", authenticate, async (req, res) => {
-
   try {
     const patientId = req.params.id;
 
-    const {
-      name,
-      guardian,
-      mobile,
-      admissionDate,
-      addictionType,
-      totalFees,
-    } = req.body;
+    const { name, guardian, mobile, admissionDate, addictionType, totalFees } =
+      req.body;
 
     // 1️⃣ Get Full Patient Sheet Data (including Paid & Balance)
     const response = await sheets.spreadsheets.values.get({
@@ -391,7 +377,6 @@ app.put("/patients/:id", authenticate, async (req, res) => {
       message: "Patient updated successfully!",
       updatedBalance: newBalance,
     });
-
   } catch (error) {
     res.status(500).json({
       error: "Failed to update patient",
@@ -456,7 +441,6 @@ app.post("/patients/:id/pay", async (req, res) => {
       patientId,
       totalPaid: newPaidAmount,
     });
-
   } catch (error) {
     res.status(500).json({
       error: "Failed to process payment",
@@ -467,14 +451,13 @@ app.post("/patients/:id/pay", async (req, res) => {
 
 // 🗑 Soft Delete Patient By ID
 app.delete("/patients/:id", authenticate, async (req, res) => {
-
   try {
     const patientId = req.params.id;
 
     // 1️⃣ Get all data (including Status column)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:J",   // 👈 Status column tak lena hai
+      range: "Sheet1!A:J", // 👈 Status column tak lena hai
     });
 
     const rows = response.data.values;
@@ -504,7 +487,6 @@ app.delete("/patients/:id", authenticate, async (req, res) => {
     });
 
     res.json({ message: `Patient ${patientId} soft deleted successfully` });
-
   } catch (error) {
     res.status(500).json({
       error: "Failed to soft delete patient",
@@ -513,10 +495,8 @@ app.delete("/patients/:id", authenticate, async (req, res) => {
   }
 });
 
-
 // ✅ Add Payment API (Improved Safe Version)
 app.post("/add-payment", authenticate, async (req, res) => {
-
   try {
     const { patientId, amount, paymentMode, receivedBy } = req.body;
     const paymentAmount = Number(amount);
@@ -542,11 +522,11 @@ app.post("/add-payment", authenticate, async (req, res) => {
 
     const actualRowNumber = rowIndex + 2;
 
-    const status = rows[rowIndex][9];  // Status column (J)
+    const status = rows[rowIndex][9]; // Status column (J)
 
     if (status !== "Active") {
       return res.status(400).json({
-      message: "Cannot add payment. Patient is deleted.",
+        message: "Cannot add payment. Patient is deleted.",
       });
     }
 
@@ -573,7 +553,6 @@ app.post("/add-payment", authenticate, async (req, res) => {
         values: [[newPaidAmount, newBalance]],
       },
     });
-
 
     // 4️⃣ Generate PaymentID
     const paymentRes = await sheets.spreadsheets.values.get({
@@ -610,7 +589,6 @@ app.post("/add-payment", authenticate, async (req, res) => {
       updatedPaidAmount: newPaidAmount,
       remainingBalance: totalFees - newPaidAmount,
     });
-
   } catch (error) {
     res.status(500).json({
       error: "Failed to add payment",
@@ -636,18 +614,17 @@ app.get("/payments", authenticate, async (req, res) => {
     const headers = rows[0];
     const dataRows = rows.slice(1);
 
-    const payments = dataRows.map(row =>
+    const payments = dataRows.map((row) =>
       headers.reduce((obj, header, index) => {
         obj[header] = row[index];
         return obj;
-      }, {})
+      }, {}),
     );
 
     res.json({
       count: payments.length,
-      payments
+      payments,
     });
-
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch payments",
@@ -656,10 +633,8 @@ app.get("/payments", authenticate, async (req, res) => {
   }
 });
 
-
 // ✅ Get Payment History By Patient ID
 app.get("/payments/:patientId", authenticate, async (req, res) => {
-
   try {
     const patientId = req.params.patientId;
 
@@ -682,7 +657,7 @@ app.get("/payments/:patientId", authenticate, async (req, res) => {
         headers.reduce((obj, header, index) => {
           obj[header] = row[index];
           return obj;
-        }, {})
+        }, {}),
       )
       .filter((p) => p.PatientID === patientId);
 
@@ -690,7 +665,6 @@ app.get("/payments/:patientId", authenticate, async (req, res) => {
       count: payments.length,
       payments,
     });
-
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch payments",
@@ -698,7 +672,6 @@ app.get("/payments/:patientId", authenticate, async (req, res) => {
     });
   }
 });
-
 
 // ✅ Dashboard Summary (Active Patients Only)
 app.get("/dashboard", authenticate, async (req, res) => {
@@ -724,7 +697,6 @@ app.get("/dashboard", authenticate, async (req, res) => {
     let totalPending = 0;
 
     rows.forEach((row) => {
-
       if (!row) return;
 
       const status = row[9] || "";
@@ -736,7 +708,7 @@ app.get("/dashboard", authenticate, async (req, res) => {
         const paid = Number(row[7] || 0);
 
         totalCollection += paid;
-        totalPending += (totalFees - paid);
+        totalPending += totalFees - paid;
       }
     });
 
@@ -745,7 +717,6 @@ app.get("/dashboard", authenticate, async (req, res) => {
       totalCollection,
       totalPending,
     });
-
   } catch (error) {
     console.error("Dashboard error:", error);
     res.status(500).json({
@@ -759,4 +730,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
-
