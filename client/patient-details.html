@@ -34,18 +34,27 @@
 
       /* Info Card */
       .info-box {
-        background: #ffffff;
-        padding: 18px;
-        border-radius: 14px;
-        margin-bottom: 18px;
+        background: linear-gradient(135deg, #f8fafc, #eef2ff);
+        padding: 15px;
+        border-radius: 12px;
         border: 1px solid #e2e8f0;
-        transition: all 0.25s ease;
+        transition: 0.25s ease-in-out;
+      }
+      .basic-box {
+        background: linear-gradient(135deg, #f8fafc, #e0f2fe);
       }
 
+      .financial-box {
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      }
+
+      .additional-box {
+        background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+      }
       .info-box:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-        border-color: #cbd5e1;
+        background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
       }
 
       .label {
@@ -154,7 +163,7 @@
         <h5 class="section-title">Basic Information</h5>
         <div class="row">
           <div class="col-md-4">
-            <div class="info-box">
+            <div class="info-box basic-box">
               <small class="text-muted">Patient ID</small>
               <div><strong>${data.ID ?? "-"}</strong></div>
             </div>
@@ -199,7 +208,7 @@
         <h5 class="section-title">Financial Details</h5>
         <div class="row">
           <div class="col-md-4">
-            <div class="info-box financial-highlight">
+            <div class="info-box financial-box">
               <small class="text-muted">Total Fees</small>
               <div><strong>₹${data.TotalFees ?? 0}</strong></div>
             </div>
@@ -223,7 +232,7 @@
         <h5 class="section-title">Additional Details</h5>
         <div class="row">
           <div class="col-md-4">
-            <div class="info-box">
+            <div class="info-box additional-box">
               <small class="text-muted">Addiction Type</small>
               <div><strong>${data.AddictionType ?? "-"}</strong></div>
             </div>
