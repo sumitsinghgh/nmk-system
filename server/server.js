@@ -202,19 +202,40 @@ app.get("/patients", async (req, res) => {
     const rows = response.data.values || [];
 
     const patients = rows
-    .filter(row => row[9] === "Active")   // 👈 Sirf Active
-    .map((row) => ({
-      id: row[0],
-      name: row[1],
-      guardian: row[2],
-      mobile: row[3],
-      admissionDate: row[4],
-      addictionType: row[5],
-      totalFees: row[6],
-      paidAmount: row[7] || 0,
-      balance: row[8] || row[6],
-      status: row[9],
-    }));
+    .filter(row => row[9] === "Active")
+    .map((row) => {
+
+      const admissionDate = row[4];
+
+      let months = 0;
+      let days = 0;
+
+      if (admissionDate) {
+        const admitDate = new Date(admissionDate);
+        const today = new Date();
+
+        const diffTime = today - admitDate;
+        const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        months = Math.floor(totalDays / 30);
+        days = totalDays % 30;
+      }
+
+      return {
+        id: row[0],
+        name: row[1],
+        guardian: row[2],
+        mobile: row[3],
+        admissionDate: row[4],
+        addictionType: row[5],
+        totalFees: row[6],
+        paidAmount: row[7] || 0,
+        balance: row[8] || row[6],
+        status: row[9],
+        months,
+        days
+      };
+    });
 
     res.json({
       count: patients.length,

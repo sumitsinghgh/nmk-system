@@ -253,7 +253,6 @@ function logout() {
   window.location.href = "index.html";
 }
 
-loadPayments();
 window.addEventListener("DOMContentLoaded", function () {
   const amountInput = document.getElementById("amount");
 
@@ -270,7 +269,7 @@ function formatDate(dateString) {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 }
-
+loadPayments();
 </script>
 
 </body>
