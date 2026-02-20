@@ -326,10 +326,10 @@ app.put("/patients/:id", authenticate, async (req, res) => {
 
     const { name, guardian, mobile, admissionDate, addictionType, totalFees } =
       req.body;
-    // 🔹 Mobile Validation
-    if (!/^\d{10}$/.test(mobile) || /^0+$/.test(mobile)) {
+    // 🔹 Strict Indian Mobile Validation
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
       return res.status(400).json({
-        message: "Invalid mobile number. Must be 10 digits.",
+        message: "Invalid mobile number. Must start with 6-9 and be 10 digits.",
       });
     }
     // 1️⃣ Get Full Patient Sheet Data (including Paid & Balance)
