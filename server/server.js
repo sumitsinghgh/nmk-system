@@ -9,6 +9,11 @@ const ADMIN_EMAIL = "admin@nmk.com";
 const ADMIN_PASSWORD = "123456";
 
 const app = express();
+function isValidMobile(mobile) {
+  if (!/^\d{10}$/.test(mobile)) return false;
+  if (/^0+$/.test(mobile)) return false;
+  return true;
+}
 console.log("Server file loaded successfully");
 
 app.use(cors());
@@ -92,6 +97,13 @@ app.post("/add-patient", async (req, res) => {
       pickupType = "Self",
       distance = "",
     } = req.body;
+
+    // 🔹 Mobile Validation
+    if (!/^\d{10}$/.test(mobile) || /^0+$/.test(mobile)) {
+      return res.status(400).json({
+        message: "Invalid mobile number. Must be 10 digits.",
+      });
+    }
 
     // 🔹 Validate Pickup / Distance
     let finalDistance = "";
@@ -314,7 +326,12 @@ app.put("/patients/:id", authenticate, async (req, res) => {
 
     const { name, guardian, mobile, admissionDate, addictionType, totalFees } =
       req.body;
-
+    // 🔹 Mobile Validation
+    if (!/^\d{10}$/.test(mobile) || /^0+$/.test(mobile)) {
+      return res.status(400).json({
+        message: "Invalid mobile number. Must be 10 digits.",
+      });
+    }
     // 1️⃣ Get Full Patient Sheet Data (including Paid & Balance)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
