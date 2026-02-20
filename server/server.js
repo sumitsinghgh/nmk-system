@@ -98,19 +98,17 @@ app.post("/add-patient", async (req, res) => {
       distance = "",
     } = req.body;
 
-    // 🔐 Strict Mobile Validation
-if (!/^[6-9]{10}$/.test(mobile)) {
-  return res.status(400).json({
-    message: "Invalid mobile number. Must start with 6-9 and be 10 digits.",
-  });
-}
+    // 🔐 Clean + Strict Mobile Validation
 
-if (/^0+$/.test(mobile)) {
-  return res.status(400).json({
-    message: "Invalid mobile number",
-  });
-}
+    // Remove +91 or 91 if user sends it
+    let cleanMobile = mobile.replace(/^(\+91|91)/, "");
 
+    // Must be exactly 10 digits starting with 6-9
+    if (!/^[6-9][0-9]{9}$/.test(cleanMobile)) {
+      return res.status(400).json({
+        message: "Invalid mobile number. Must start with 6-9 and be 10 digits.",
+      });
+    }
     // 🔹 Validate Pickup / Distance
     let finalDistance = "";
 
@@ -159,7 +157,7 @@ if (/^0+$/.test(mobile)) {
             newId,
             name,
             guardian,
-            mobile,
+            cleanMobile,
             admissionDate,
             addictionType,
             totalFees,
