@@ -80,7 +80,7 @@ app.get("/test-sheet", async (req, res) => {
   }
 });
 
-/// ✅ Add Patient (Auto ID + Payment System)
+// ✅ Add Patient (Auto ID + Pickup/Distance Support)
 app.post("/add-patient", async (req, res) => {
   try {
     const {
@@ -91,9 +91,27 @@ app.post("/add-patient", async (req, res) => {
       addictionType,
       totalFees,
       paidAmount = 0,
+      pickupType = "Self",
+      distance = ""
     } = req.body;
 
-    // Get all existing IDs
+    // 🔹 Validate Pickup / Distance
+    let finalDistance = "";
+
+    if (pickupType === "Pickup") {
+      if (!distance || isNaN(distance) || Number(distance) <= 0) {
+        return res.status(400).json({
+          message: "Valid distance (in KM) required for Pickup"
+        });
+      }
+      finalDistance = parseInt(distance); // integer only
+    }
+
+    if (pickupType === "Self") {
+      finalDistance = "";
+    }
+
+    // 🔹 Get existing IDs
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: "Sheet1!A2:A",
@@ -104,7 +122,7 @@ app.post("/add-patient", async (req, res) => {
     let nextIdNumber = 1;
 
     if (rows.length > 0) {
-      const lastId = rows[rows.length - 1][0]; // e.g. P002
+      const lastId = rows[rows.length - 1][0];
       const lastNumber = parseInt(lastId.replace("P", ""));
       nextIdNumber = lastNumber + 1;
     }
@@ -114,10 +132,10 @@ app.post("/add-patient", async (req, res) => {
     const balance = Number(totalFees) - Number(paidAmount);
     const status = "Active";
 
-
+    // 🔹 Append including Pickup + Distance
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:J",
+      range: "Sheet1!A:L", // updated range
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [
@@ -132,6 +150,8 @@ app.post("/add-patient", async (req, res) => {
             paidAmount,
             balance,
             status,
+            pickupType,
+            finalDistance
           ],
         ],
       },
@@ -196,7 +216,7 @@ app.get("/patients", async (req, res) => {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A2:J", // Header ko skip kiya (Row 1)
+      range: "Sheet1!A2:L", // Header ko skip kiya (Row 1)
     });
 
     const rows = response.data.values || [];
@@ -232,6 +252,8 @@ app.get("/patients", async (req, res) => {
         paidAmount: row[7] || 0,
         balance: row[8] || row[6],
         status: row[9],
+        pickupType: row[10] || "",
+        distance: row[11] || "",
         months,
         days
       };
