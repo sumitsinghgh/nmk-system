@@ -98,12 +98,18 @@ app.post("/add-patient", async (req, res) => {
       distance = "",
     } = req.body;
 
-    // 🔹 Mobile Validation
-    if (!/^\d{10}$/.test(mobile) || /^0+$/.test(mobile)) {
-      return res.status(400).json({
-        message: "Invalid mobile number. Must be 10 digits.",
-      });
-    }
+    // 🔐 Strict Mobile Validation
+if (!/^[6-9]{10}$/.test(mobile)) {
+  return res.status(400).json({
+    message: "Invalid mobile number. Must start with 6-9 and be 10 digits.",
+  });
+}
+
+if (/^0+$/.test(mobile)) {
+  return res.status(400).json({
+    message: "Invalid mobile number",
+  });
+}
 
     // 🔹 Validate Pickup / Distance
     let finalDistance = "";
