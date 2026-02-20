@@ -55,32 +55,31 @@
           window.location.href = "patients.html";
           return;
         }
-
         document.getElementById("patientData").innerHTML = `
-    <div class="row mb-3">
-      <div class="col-md-4"><span class="label">ID:</span> ${data.ID || data.id}</div>
-      <div class="col-md-4"><span class="label">Name:</span> ${data.Name || data.name}</div>
-      <div class="col-md-4"><span class="label">Guardian:</span> ${data.Guardian || data.guardian}</div>
-    </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>ID:</strong> ${data.ID ?? "-"}</div>
+                <div class="col-md-4"><strong>Name:</strong> ${data.Name ?? "-"}</div>
+                <div class="col-md-4"><strong>Guardian:</strong> ${data.Guardian ?? "-"}</div>
+            </div>
 
-    <div class="row mb-3">
-      <div class="col-md-4"><span class="label">Mobile:</span> ${data.Mobile || data.mobile}</div>
-      <div class="col-md-4"><span class="label">Admission Date:</span> ${data.AdmissionDate || data.admissionDate}</div>
-      <div class="col-md-4"><span class="label">Addiction Type:</span> ${data.AddictionType || data.addictionType}</div>
-    </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>Mobile:</strong> ${data.Mobile ?? "-"}</div>
+                <div class="col-md-4"><strong>Admission Date:</strong> ${data.AdmissionDate ?? "-"}</div>
+                <div class="col-md-4"><strong>Addiction Type:</strong> ${data.AddictionType ?? "-"}</div>
+            </div>
 
-    <div class="row mb-3">
-      <div class="col-md-4"><span class="label">Total Fees:</span> ₹${data.TotalFees || data.totalFees}</div>
-      <div class="col-md-4"><span class="label">Paid Amount:</span> ₹${data.PaidAmount || data.paidAmount}</div>
-      <div class="col-md-4"><span class="label">Balance:</span> ₹${data.Balance || data.balance}</div>
-    </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>Total Fees:</strong> ₹${data.TotalFees ?? 0}</div>
+                <div class="col-md-4"><strong>Paid Amount:</strong> ₹${data.PaidAmount ?? 0}</div>
+                <div class="col-md-4"><strong>Balance:</strong> ₹${data.Balance ?? 0}</div>
+            </div>
 
-    <div class="row mb-3">
-      <div class="col-md-4"><span class="label">Pickup Type:</span> ${data.PickupType || data.pickupType || "-"}</div>
-      <div class="col-md-4"><span class="label">Distance (KM):</span> ${data.DistanceKM || data.distance || "-"}</div>
-      <div class="col-md-4"><span class="label">Status:</span> ${data.Status || data.status}</div>
-    </div>
-  `;
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>Pickup Type:</strong> ${data.PickupType ?? "-"}</div>
+                <div class="col-md-4"><strong>Distance (KM):</strong> ${data.DistanceKM ?? "-"}</div>
+                <div class="col-md-4"><strong>Status:</strong> ${data.Status ?? "-"}</div>
+            </div>
+            `;
       }
 
       function goBack() {
