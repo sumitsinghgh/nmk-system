@@ -282,14 +282,14 @@ app.get("/patients", async (req, res) => {
   }
 });
 
-// ✅ Get Patient By ID (Full Columns Support)
+// ✅ Get Patient By ID (Full Columns + Safe Months/Days)
 app.get("/patients/:id", async (req, res) => {
   try {
     const patientId = req.params.id;
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:L", // ✅ Extended till DistanceKM
+      range: "Sheet1!A:L", // Covers all columns till DistanceKM
     });
 
     const rows = response.data.values;
@@ -298,13 +298,13 @@ app.get("/patients/:id", async (req, res) => {
       return res.status(404).json({ message: "No patients found" });
     }
 
-    const headers = rows[0]; // First row (column names)
-    const dataRows = rows.slice(1); // Actual data
+    const headers = rows[0]; // Header row
+    const dataRows = rows.slice(1); // Data rows
 
     const patient = dataRows
       .map((row) =>
         headers.reduce((obj, header, index) => {
-          obj[header] = row[index] || ""; // ✅ Prevent undefined
+          obj[header] = row[index] || ""; // Prevent undefined
           return obj;
         }, {}),
       )
@@ -313,6 +313,33 @@ app.get("/patients/:id", async (req, res) => {
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
+
+    // ==============================
+    // 🧮 Safe Months & Days Calculation
+    // ==============================
+
+    let months = 0;
+    let days = 0;
+
+    if (patient.AdmissionDate) {
+      const admissionDate = new Date(patient.AdmissionDate);
+      const today = new Date();
+
+      if (!isNaN(admissionDate)) {
+        const diffTime = today - admissionDate;
+
+        const totalDays = Math.max(
+          0,
+          Math.floor(diffTime / (1000 * 60 * 60 * 24)),
+        );
+
+        months = Math.floor(totalDays / 30);
+        days = totalDays % 30;
+      }
+    }
+
+    patient.Months = months;
+    patient.Days = days;
 
     res.json(patient);
   } catch (error) {

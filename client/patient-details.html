@@ -63,9 +63,12 @@
             </div>
 
             <div class="row mb-3">
-                <div class="col-md-4"><strong>Mobile:</strong> ${data.Mobile ?? "-"}</div>
-                <div class="col-md-4"><strong>Admission Date:</strong> ${data.AdmissionDate ?? "-"}</div>
-                <div class="col-md-4"><strong>Addiction Type:</strong> ${data.AddictionType ?? "-"}</div>
+              <div class="col-md-4"><strong>Mobile:</strong> ${data.Mobile ?? "-"}</div>
+                <div class="col-md-4">
+                    <strong>Admission Date:</strong> ${data.AdmissionDate ?? "-"}<br>
+                    <strong>Duration:</strong> ${data.Months ?? 0} Months, ${data.Days ?? 0} Days
+                </div>
+              <div class="col-md-4"><strong>Addiction Type:</strong> ${data.AddictionType ?? "-"}</div>
             </div>
 
             <div class="row mb-3">
