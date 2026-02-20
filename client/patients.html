@@ -141,6 +141,8 @@ async function loadPatients() {
           <th>Name</th>
           <th>Guardian</th>
           <th>Mobile</th>
+          <th>Month</th>
+          <th>Days</th>
           <th>Total Fees</th>
           <th>Paid</th>
           <th>Balance</th>
@@ -159,6 +161,8 @@ async function loadPatients() {
       <td>${p.name}</td>
       <td>${p.guardian}</td>
       <td>${p.mobile}</td>
+      <td>${p.months}</td>
+      <td>${p.days}</td>
       <td>₹${p.totalFees || 0}</td>
       <td>₹${p.paidAmount || 0}</td>
       <td>₹${balance}</td>
