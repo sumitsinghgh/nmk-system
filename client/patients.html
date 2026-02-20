@@ -180,6 +180,7 @@
       <td>₹${p.paidAmount || 0}</td>
       <td>₹${balance}</td>
       <td>
+        <button class="btn btn-sm btn-info me-1" onclick="viewPatient('${p.id}')">View</button>
         <button class="btn btn-sm btn-warning" onclick="editPatient('${p.id}')">Edit</button>
         <button class="btn btn-sm btn-danger" onclick="deletePatient('${p.id}')">Delete</button>
       </td>
@@ -207,6 +208,9 @@
 
       function editPatient(id) {
         window.location.href = `edit-patient.html?id=${id}`;
+      }
+      function viewPatient(id) {
+        window.location.href = `patient-details.html?id=${id}`;
       }
 
       function logout() {

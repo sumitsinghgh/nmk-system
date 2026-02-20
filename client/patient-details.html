@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Patient Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: #f4f6f9;
+      }
+      .card {
+        border-radius: 12px;
+      }
+      .label {
+        font-weight: 600;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <button class="btn btn-secondary mb-3" onclick="goBack()">← Back</button>
+
+      <div class="card shadow p-4">
+        <h3 class="mb-4">Patient Full Details</h3>
+
+        <div id="patientData"></div>
+      </div>
+    </div>
+
+    <script>
+      const API = "https://nmk-system.onrender.com";
+      const token = localStorage.getItem("token");
+
+      const params = new URLSearchParams(window.location.search);
+      const patientId = params.get("id");
+
+      if (!token) {
+        window.location.href = "index.html";
+      }
+
+      async function loadPatientDetails() {
+        const response = await fetch(API + "/patients/" + patientId, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert("Patient not found");
+          window.location.href = "patients.html";
+          return;
+        }
+
+        document.getElementById("patientData").innerHTML = `
+    <div class="row mb-3">
+      <div class="col-md-4"><span class="label">ID:</span> ${data.ID || data.id}</div>
+      <div class="col-md-4"><span class="label">Name:</span> ${data.Name || data.name}</div>
+      <div class="col-md-4"><span class="label">Guardian:</span> ${data.Guardian || data.guardian}</div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4"><span class="label">Mobile:</span> ${data.Mobile || data.mobile}</div>
+      <div class="col-md-4"><span class="label">Admission Date:</span> ${data.AdmissionDate || data.admissionDate}</div>
+      <div class="col-md-4"><span class="label">Addiction Type:</span> ${data.AddictionType || data.addictionType}</div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4"><span class="label">Total Fees:</span> ₹${data.TotalFees || data.totalFees}</div>
+      <div class="col-md-4"><span class="label">Paid Amount:</span> ₹${data.PaidAmount || data.paidAmount}</div>
+      <div class="col-md-4"><span class="label">Balance:</span> ₹${data.Balance || data.balance}</div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4"><span class="label">Pickup Type:</span> ${data.PickupType || data.pickupType || "-"}</div>
+      <div class="col-md-4"><span class="label">Distance (KM):</span> ${data.DistanceKM || data.distance || "-"}</div>
+      <div class="col-md-4"><span class="label">Status:</span> ${data.Status || data.status}</div>
+    </div>
+  `;
+      }
+
+      function goBack() {
+        window.location.href = "patients.html";
+      }
+
+      loadPatientDetails();
+    </script>
+  </body>
+</html>
