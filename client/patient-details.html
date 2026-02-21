@@ -83,8 +83,7 @@
         margin-top: 6px;
       }
 
-      /* Status Badge */
-      .status-active {
+      .status-admitted {
         background: #22c55e;
         color: white;
         padding: 6px 14px;
@@ -94,7 +93,7 @@
         display: inline-block;
       }
 
-      .status-deleted {
+      .status-discharged {
         background: #ef4444;
         color: white;
         padding: 6px 14px;
@@ -266,7 +265,9 @@
               <div class="label">Status</div>
               <div class="value">
                 <span class="${
-                  data.Status === "Active" ? "status-active" : "status-deleted"
+                  data.Status === "Admitted"
+                    ? "status-admitted"
+                    : "status-discharged"
                 }">
                   ${data.Status ?? "-"}
                 </span>

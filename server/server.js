@@ -144,7 +144,7 @@ app.post("/add-patient", async (req, res) => {
     const newId = "P" + String(nextIdNumber).padStart(3, "0");
 
     const balance = Number(totalFees) - Number(paidAmount);
-    const status = "Active";
+    const status = "Admitted";
 
     // 🔹 Append including Pickup + Distance
     await sheets.spreadsheets.values.append({
@@ -234,7 +234,7 @@ app.get("/patients", async (req, res) => {
     const rows = response.data.values || [];
 
     const patients = rows
-      .filter((row) => row[9] === "Active")
+      .filter((row) => row[9] === "Admitted")
       .map((row) => {
         const admissionDate = row[4];
 
@@ -497,15 +497,14 @@ app.post("/patients/:id/pay", async (req, res) => {
   }
 });
 
-// 🗑 Soft Delete Patient By ID
+// 🗑 Soft Discharge Patient By ID
 app.delete("/patients/:id", authenticate, async (req, res) => {
   try {
     const patientId = req.params.id;
 
-    // 1️⃣ Get all data (including Status column)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:J", // 👈 Status column tak lena hai
+      range: "Sheet1!A:J",
     });
 
     const rows = response.data.values;
@@ -514,30 +513,27 @@ app.delete("/patients/:id", authenticate, async (req, res) => {
       return res.status(404).json({ message: "No patients found" });
     }
 
-    // 2️⃣ Find row index
     const rowIndex = rows.findIndex((row) => row[0] === patientId);
 
     if (rowIndex === -1) {
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    // 3️⃣ Update Status column to "Deleted"
-    // J column = Status (10th column)
-    const actualRowNumber = rowIndex + 1; // Sheet index correction
+    const actualRowNumber = rowIndex + 1;
 
     await sheets.spreadsheets.values.update({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: `Sheet1!J${actualRowNumber}`,
       valueInputOption: "RAW",
       requestBody: {
-        values: [["Deleted"]],
+        values: [["Discharged"]],
       },
     });
 
-    res.json({ message: `Patient ${patientId} soft deleted successfully` });
+    res.json({ message: `Patient ${patientId} discharged successfully` });
   } catch (error) {
     res.status(500).json({
-      error: "Failed to soft delete patient",
+      error: "Failed to discharge patient",
       details: error.message,
     });
   }
@@ -572,9 +568,9 @@ app.post("/add-payment", authenticate, async (req, res) => {
 
     const status = rows[rowIndex][9]; // Status column (J)
 
-    if (status !== "Active") {
+    if (status !== "Admitted") {
       return res.status(400).json({
-        message: "Cannot add payment. Patient is deleted.",
+        message: "Cannot add payment. Patient is Discharged.",
       });
     }
 
@@ -749,7 +745,7 @@ app.get("/dashboard", authenticate, async (req, res) => {
 
       const status = row[9] || "";
 
-      if (status === "Active") {
+      if (status === "Admitted") {
         totalPatients++;
 
         const totalFees = Number(row[6] || 0);
