@@ -284,8 +284,8 @@
         <div id="receiptTemplate" style="display:none; padding:30px; font-family:Arial;">
 
           <div style="text-align:center; margin-bottom:20px;">
-            <h2 style="margin:0;">Nasha Mukti Kendra</h2>
-            <p style="margin:0;">Patient Payment Receipt</p>
+            <h2 style="margin:0;">New Morning Nasha Mukti Kendra</h2>
+            <p style="margin:0;">Patient Details Receipt</p>
             <hr>
           </div>
 
@@ -305,9 +305,9 @@
           <hr>
 
           <div style="margin-top:15px;">
-            <strong>Total Fees:</strong> ₹${data.TotalFees}<br>
-            <strong>Paid Amount:</strong> ₹${data.PaidAmount}<br>
-            <strong>Balance:</strong> ₹${data.Balance}
+            <strong>Total Fees:</strong> ₹${data.TotalFees ?? 0}<br>
+            <strong>Paid Amount:</strong> ₹${data.PaidAmount ?? 0}<br>
+            <strong>Balance:</strong> ₹${(data.TotalFees ?? 0) - (data.PaidAmount ?? 0)}
           </div>
 
           <hr style="margin-top:25px;">
@@ -340,9 +340,21 @@
       }
 
       function printReceipt() {
-        const element = document.getElementById("receiptTemplate").innerHTML;
+        const content = document.getElementById("receiptTemplate").innerHTML;
+
         const win = window.open("", "", "width=900,height=700");
-        win.document.write(element);
+
+        win.document.write(`
+          <html>
+            <head>
+              <title>Patient Receipt</title>
+            </head>
+            <body>
+              ${content}
+            </body>
+          </html>
+        `);
+
         win.document.close();
         win.print();
       }
