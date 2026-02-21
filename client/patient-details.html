@@ -13,74 +13,80 @@
         min-height: 100vh;
       }
 
+      /* Main Card Container */
       .card {
         border: none;
-        border-radius: 20px;
+        border-radius: 22px;
         background: #ffffff;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
-        padding: 30px;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.07);
+        padding: 35px;
+        max-width: 1200px;
+        margin: auto;
+        animation: fadeIn 0.4s ease-in-out;
       }
 
       /* Section Heading */
       .section-title {
         font-size: 19px;
         font-weight: 600;
-        margin-top: 35px;
-        margin-bottom: 18px;
+        margin-top: 40px;
+        margin-bottom: 22px;
         color: #0f172a;
-        border-left: 4px solid #2563eb;
-        padding-left: 12px;
+        border-left: 5px solid #2563eb;
+        padding-left: 14px;
       }
 
-      /* Info Card */
+      /* Info Card Base */
       .info-box {
-        background: linear-gradient(135deg, #f8fafc, #eef2ff);
-        padding: 15px;
-        border-radius: 12px;
-        border: 1px solid rgba(0,0,0,0.05);
+        padding: 18px;
+        border-radius: 16px;
+        margin-bottom: 22px; /* 🔥 spacing fix */
+        border: 1px solid rgba(0, 0, 0, 0.05);
         transition: 0.25s ease-in-out;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
       }
+
+      /* 🔵 Basic Section */
       .basic-box {
-        background: linear-gradient(135deg, #dbeafe, #93c5fd);
+        background: linear-gradient(135deg, #bfdbfe, #60a5fa);
       }
 
+      /* 🟢 Financial Section */
       .financial-box {
-        background: linear-gradient(135deg, #bbf7d0, #4ade80);
+        background: linear-gradient(135deg, #86efac, #22c55e);
       }
 
+      /* 🟣 Additional Section */
       .additional-box {
-        background: linear-gradient(135deg, #e9d5ff, #c084fc);
-      }
-      .info-box:hover {
-        background: linear-gradient(135deg, #e0f2fe, #dbeafe);
-        transform: translateY(-3px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        background: linear-gradient(135deg, #d8b4fe, #a855f7);
       }
 
+      /* Hover effect */
+      .info-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+      }
+
+      /* Labels */
       .label {
         font-size: 12px;
-        color: #64748b;
+        color: rgba(15, 23, 42, 0.7);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.6px;
       }
 
+      /* Values */
       .value {
         font-size: 17px;
         font-weight: 600;
         color: #0f172a;
-        margin-top: 4px;
-      }
-
-      /* Financial Highlight */
-      .financial-highlight {
-        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-        border: 1px solid #bae6fd;
+        margin-top: 6px;
       }
 
       /* Status Badge */
       .status-active {
-        background: #dcfce7;
-        color: #166534;
+        background: #22c55e;
+        color: white;
         padding: 6px 14px;
         border-radius: 20px;
         font-size: 12px;
@@ -89,8 +95,8 @@
       }
 
       .status-deleted {
-        background: #fee2e2;
-        color: #991b1b;
+        background: #ef4444;
+        color: white;
         padding: 6px 14px;
         border-radius: 20px;
         font-size: 12px;
@@ -100,20 +106,16 @@
 
       /* Back Button */
       .back-btn {
-        border-radius: 12px;
-        padding: 6px 14px;
+        border-radius: 14px;
+        padding: 7px 16px;
         font-weight: 500;
       }
 
-      /* Smooth fade animation */
-      .card {
-        animation: fadeIn 0.4s ease-in-out;
-      }
-
+      /* Fade animation */
       @keyframes fadeIn {
         from {
           opacity: 0;
-          transform: translateY(10px);
+          transform: translateY(15px);
         }
         to {
           opacity: 1;
@@ -161,102 +163,109 @@
         document.getElementById("patientData").innerHTML = `
 
         <h5 class="section-title">Basic Information</h5>
-        <div class="row">
+        <div class="row g-4">
+
           <div class="col-md-4">
             <div class="info-box basic-box">
-              <small class="text-muted">Patient ID</small>
-              <div><strong>${data.ID ?? "-"}</strong></div>
+              <div class="label">Patient ID</div>
+              <div class="value">${data.ID ?? "-"}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box basic-box">
-              <small class="text-muted">Name</small>
-              <div><strong>${data.Name ?? "-"}</strong></div>
+              <div class="label">Name</div>
+              <div class="value">${data.Name ?? "-"}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box basic-box">
-              <small class="text-muted">Guardian</small>
-              <div><strong>${data.Guardian ?? "-"}</strong></div>
+              <div class="label">Guardian</div>
+              <div class="value">${data.Guardian ?? "-"}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box basic-box">
-              <small class="text-muted">Mobile</small>
-              <div><strong>${data.Mobile ?? "-"}</strong></div>
+              <div class="label">Mobile</div>
+              <div class="value">${data.Mobile ?? "-"}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box basic-box">
-              <small class="text-muted">Admission Date</small>
-              <div><strong>${data.AdmissionDate ?? "-"}</strong></div>
+              <div class="label">Admission Date</div>
+              <div class="value">${data.AdmissionDate ?? "-"}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box basic-box">
-              <small class="text-muted">Duration</small>
-              <div><strong>${data.Months} Months, ${data.Days} Days</strong></div>
+              <div class="label">Duration</div>
+              <div class="value">${data.Months} Months, ${data.Days} Days</div>
             </div>
           </div>
+
         </div>
+
 
         <h5 class="section-title">Financial Details</h5>
-        <div class="row">
+        <div class="row g-4">
+
           <div class="col-md-4">
             <div class="info-box financial-box">
-              <small class="text-muted">Total Fees</small>
-              <div><strong>₹${data.TotalFees ?? 0}</strong></div>
+              <div class="label">Total Fees</div>
+              <div class="value">₹${data.TotalFees ?? 0}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box financial-box">
-              <small class="text-muted">Paid Amount</small>
-              <div><strong>₹${data.PaidAmount ?? 0}</strong></div>
+              <div class="label">Paid Amount</div>
+              <div class="value">₹${data.PaidAmount ?? 0}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box financial-box">
-              <small class="text-muted">Balance</small>
-              <div><strong>₹${data.Balance ?? 0}</strong></div>
+              <div class="label">Balance</div>
+              <div class="value">₹${data.Balance ?? 0}</div>
             </div>
           </div>
+
         </div>
 
+
         <h5 class="section-title">Additional Details</h5>
-        <div class="row">
+        <div class="row g-4">
+
           <div class="col-md-4">
             <div class="info-box additional-box">
-              <small class="text-muted">Addiction Type</small>
-              <div><strong>${data.AddictionType ?? "-"}</strong></div>
+              <div class="label">Addiction Type</div>
+              <div class="value">${data.AddictionType ?? "-"}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box additional-box">
-              <small class="text-muted">Pickup Type</small>
-              <div><strong>${data.PickupType ?? "-"}</strong></div>
+              <div class="label">Pickup Type</div>
+              <div class="value">${data.PickupType ?? "-"}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box additional-box">
-              <small class="text-muted">Distance (KM)</small>
-              <div><strong>${data.DistanceKM ?? "-"}</strong></div>
+              <div class="label">Distance (KM)</div>
+              <div class="value">${data.DistanceKM ?? "-"}</div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="info-box additional-box">
-              <small class="text-muted">Status</small>
-              <div>
-                <span class="status-badge ${
+              <div class="label">Status</div>
+              <div class="value">
+                <span class="${
                   data.Status === "Active" ? "status-active" : "status-deleted"
                 }">
                   ${data.Status ?? "-"}
@@ -264,7 +273,9 @@
               </div>
             </div>
           </div>
+
         </div>
+
         `;
       }
 
