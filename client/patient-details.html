@@ -4,6 +4,7 @@
     <title>Patient Details</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
       rel="stylesheet"
     />
     <style>
@@ -126,6 +127,10 @@
   <body>
     <div class="container mt-5">
       <button class="btn btn-secondary mb-3" onclick="goBack()">← Back</button>
+      <button class="btn btn-success me-2" onclick="downloadReceipt()">
+        Download Receipt
+      </button>
+      <button class="btn btn-dark" onclick="printReceipt()">Print</button>
 
       <div class="card shadow p-4">
         <h3 class="mb-4">Patient Full Details</h3>
@@ -276,14 +281,71 @@
           </div>
 
         </div>
+        <div id="receiptTemplate" style="display:none; padding:30px; font-family:Arial;">
 
+          <div style="text-align:center; margin-bottom:20px;">
+            <h2 style="margin:0;">Nasha Mukti Kendra</h2>
+            <p style="margin:0;">Patient Payment Receipt</p>
+            <hr>
+          </div>
+
+          <div style="margin-bottom:15px;">
+            <strong>Receipt Date:</strong> ${new Date().toLocaleDateString()}
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <strong>Patient ID:</strong> ${data.ID}<br>
+            <strong>Name:</strong> ${data.Name}<br>
+            <strong>Guardian:</strong> ${data.Guardian}<br>
+            <strong>Mobile:</strong> ${data.Mobile}<br>
+            <strong>Admission Date:</strong> ${data.AdmissionDate}<br>
+            <strong>Duration:</strong> ${data.Months} Months, ${data.Days} Days
+          </div>
+
+          <hr>
+
+          <div style="margin-top:15px;">
+            <strong>Total Fees:</strong> ₹${data.TotalFees}<br>
+            <strong>Paid Amount:</strong> ₹${data.PaidAmount}<br>
+            <strong>Balance:</strong> ₹${data.Balance}
+          </div>
+
+          <hr style="margin-top:25px;">
+
+          <div style="margin-top:40px; display:flex; justify-content:space-between;">
+            <div>
+              <p>__________________________</p>
+              <p>Authorized Signature</p>
+            </div>
+            <div>
+              <p>__________________________</p>
+              <p>Patient Signature</p>
+            </div>
+          </div>
+
+          <div style="margin-top:30px; text-align:center;">
+            <p>Thank you for choosing our services.</p>
+          </div>
+
+        </div>
         `;
       }
 
       function goBack() {
         window.location.href = "patients.html";
       }
+      function downloadReceipt() {
+        const element = document.getElementById("receiptTemplate");
+        html2pdf().from(element).save();
+      }
 
+      function printReceipt() {
+        const element = document.getElementById("receiptTemplate").innerHTML;
+        const win = window.open("", "", "width=900,height=700");
+        win.document.write(element);
+        win.document.close();
+        win.print();
+      }
       loadPatientDetails();
     </script>
   </body>
