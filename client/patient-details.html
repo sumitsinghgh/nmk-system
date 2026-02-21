@@ -140,7 +140,16 @@
         <h3 class="mb-4">Patient Full Details</h3>
 
         <div id="patientData"></div>
-        <div id="receiptTemplate" style="display: none"></div>
+        <div
+          id="receiptTemplate"
+          style="
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 800px;
+            background: white;
+          "
+        ></div>
       </div>
     </div>
 
@@ -341,7 +350,16 @@
       }
       function downloadReceipt() {
         const element = document.getElementById("receiptTemplate");
-        html2pdf().from(element).save();
+
+        const opt = {
+          margin: 10,
+          filename: "Patient_Receipt.pdf",
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        };
+
+        html2pdf().set(opt).from(element).save();
       }
 
       function printReceipt() {
